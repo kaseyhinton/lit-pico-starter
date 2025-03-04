@@ -4,19 +4,26 @@
     <script type="importmap">
       {
         "imports": {
-          "lit": "./dependencies/lit-html.js",
-          "mitt": "./dependencies/mitt.js"
+          "lit": "./dependencies/lit-html.js"
         }
       }
     </script>
-    <meta charset="UTF-8" />
-    <link rel="stylesheet" href="dependencies/pico.min.css" />
+    <link rel="stylesheet" href="/dependencies/pico.min.css" />
     <link rel="stylesheet" href="styles.css" />
-
+    <meta charset="UTF-8" />
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lit & Pico Starter</title>
-    <script type="module" src="/index.js" defer></script>
+    <script type="module">
+      import renderMyApp from "./my-app.js";
+
+      window.addEventListener("DOMContentLoaded", () => {
+        const app = document.getElementById("app");
+        renderMyApp(app);
+      });
+    </script>
   </head>
-  <body></body>
+  <body>
+    <div id="app"></div>
+  </body>
 </html>

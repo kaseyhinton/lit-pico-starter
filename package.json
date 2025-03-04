@@ -4,10 +4,10 @@
     "version": "0.1.0",
     "type": "module",
     "scripts": {
-      "start": "http-server"
+      "start": "ws --spa index.html --port 3020"
     },
     "devDependencies": {
-      "http-server": "^14.1.1"
+      "local-web-server": "5.4.0"
     },
     "dependencies": {
       "lit": "^3.2.1"
