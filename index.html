@@ -7,17 +7,23 @@
     <meta charset="UTF-8" />
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; base-uri 'self'; form-action 'self'">
     <title>Lit & Pico Starter</title>
     <script type="module">
       import renderMyApp from "./my-app.js";
-
-      window.addEventListener("DOMContentLoaded", () => {
+      addEventListener("DOMContentLoaded", () => {
         const app = document.getElementById("app");
         renderMyApp(app);
       });
     </script>
   </head>
   <body>
-    <div id="app"></div>
+    <noscript>
+      <main class="container">
+        <h3>Generate Secure UID</h3>
+        <p>This app requires JavaScript to generate UUIDs. Example format: 123e4567-e89b-12d3-a456-426614174000</p>
+      </main>
+    </noscript>
+    <div id="app" aria-live="polite"></div>
   </body>
 </html>
