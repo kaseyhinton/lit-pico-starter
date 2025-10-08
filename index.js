@@ -89,8 +89,6 @@ export const MyAppTemplate = () => html`
 `;
 
 const _render = (container) => {
-  console.log("Rendering application", store.state);
-
   document.body.setAttribute("data-theme", store.state.theme);
 
   render(MyAppTemplate(), container);
