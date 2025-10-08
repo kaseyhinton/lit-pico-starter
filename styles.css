@@ -7,3 +7,8 @@ body {
     color: var(--pico-color);
     min-height: 100vh;
 }
+
+progress {
+    position: absolute;
+    border-radius: 0;
+}

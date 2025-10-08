@@ -1,10 +1,10 @@
-import { html, render } from "lit";
+import { html, render } from "./dependencies/lit-html.js";
 
-import renderNavbar from "./components/navbar.js";
+import navbar from "./components/navbar.js";
 import store from "./services/store.js";
 
 export const MyAppTemplate = () => html`
-  <div id="navbar"></div>
+  ${navbar()}
   <main class="container">
     <h3>Generate Secure UID</h3>
     <p>Free and fast UID generation</p>
@@ -21,11 +21,9 @@ export const MyAppTemplate = () => html`
               type="range"
               .value=${store?.state?.numberOfUUIDS?.toString()}
               @input=${(e) => {
-                store.dispatch("requestUpdate", {
-                  numberOfUUIDS: e?.target?.value
-                    ? Number(e?.target?.value)
-                    : 0,
-                });
+            store.setState({
+              numberOfUUIDS: e?.target?.value ? Number(e?.target?.value) : 0,
+            });
               }}
             />
           </label>
@@ -36,7 +34,7 @@ export const MyAppTemplate = () => html`
               type="checkbox"
               role="switch"
               @click=${() => {
-                store.dispatch("requestUpdate", {
+                store.setState({
                   isAgreedToTerms: !store.state.isAgreedToTerms,
                 });
               }}
@@ -50,9 +48,7 @@ export const MyAppTemplate = () => html`
           aria-busy="${store?.state?.isLoading ? "true" : "false"}"
           type="button"
           @click=${() => {
-            store.dispatch("requestUpdate", {
-              isLoading: true,
-            });
+            store.setState({ isLoading: true });
 
             const uuids = [];
             for (let i = 0; i < store?.state?.numberOfUUIDS; i++) {
@@ -61,10 +57,7 @@ export const MyAppTemplate = () => html`
             }
 
             setTimeout(() => {
-              store.dispatch("requestUpdate", {
-                isLoading: false,
-                UUIDS: uuids,
-              });
+              store.setState({ isLoading: false, UUIDS: uuids });
             }, 1200);
           }}
         >
@@ -101,9 +94,6 @@ const _render = (container) => {
   document.body.setAttribute("data-theme", store.state.theme);
 
   render(MyAppTemplate(), container);
-
-  const navbarContainer = document.getElementById("navbar");
-  renderNavbar(navbarContainer);
 };
 
 const renderMyApp = (container) => {
