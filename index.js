@@ -88,15 +88,14 @@ export const MyAppTemplate = () => html`
   </main>
 `;
 
-const _render = (container) => {
-  document.body.setAttribute("data-theme", store.state.theme);
-
-  render(MyAppTemplate(), container);
-};
-
 const renderMyApp = (container) => {
-  _render(container);
-  store.subscribe(() => _render(container));
+  const rerender = () => {
+    document.body.setAttribute("data-theme", store.state.theme);
+    render(MyAppTemplate(), container);
+  };
+
+  rerender();
+  return store.subscribe(rerender);
 };
 
 export default renderMyApp;
