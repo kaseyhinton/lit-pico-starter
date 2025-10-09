@@ -1,13 +1,9 @@
-import { html, render } from "lit";
-import store from "../services/store.js"; // Import the singleton store
+import { html } from "../dependencies/lit-html.js";
+import { moonIcon, sunIcon } from "./icons.js";
 
-const navbarTemplate = () => html`
-  <style>
-    progress {
-      position: absolute;
-      border-radius: 0;
-    }
-  </style>
+import store from "../services/store.js";
+
+export default () => html`
   <progress ?hidden=${!store.state.isLoading}></progress>
   <div class="container">
     <nav>
@@ -17,23 +13,25 @@ const navbarTemplate = () => html`
       <ul>
         <li>
           <button
-            @click=${() => store.dispatch("toggleTheme")}
+            @click=${() =>
+              store.setState({
+                theme: store.state.theme === "light" ? "dark" : "light",
+                isDirty: true,
+              })}
             class="secondary"
           >
-            ${store.state.theme === "dark"
-              ? html` <i class="ti ti-moon-filled"></i> `
-              : html` <i class="ti ti-sun-filled"></i> `}
+            ${store.state.theme === "dark" ? moonIcon : sunIcon}
           </button>
         </li>
         <li>
           <details class="dropdown">
-            <summary><i class="ti ti-user-filled"></i> Account</summary>
-            <ul dir="rtl">
+            <summary>Account</summary>
+            <ul>
               <li>
-                <a href="#"> <i class="ti ti-settings-filled"></i> Settings</a>
+                <a href="#"> Settings</a>
               </li>
               <li>
-                <a href="#"> <i class="ti ti-logout"></i> Logout</a>
+                <a href="#"> Logout</a>
               </li>
             </ul>
           </details>
@@ -42,10 +40,3 @@ const navbarTemplate = () => html`
     </nav>
   </div>
 `;
-
-const renderNavbar = (container) => {
-  render(navbarTemplate(), container);
-  store.subscribe(() => render(navbarTemplate(), container));
-};
-
-export default renderNavbar;

@@ -1,43 +1,37 @@
 // store.js
-const store = {
-  state: {
-    isLoading: false,
-    isDirty: false,
-    isAgreedToTerms: true,
-    numberOfUUIDS: 5,
-    UUIDS: [],
-    theme: "light",
-  },
-  actions: {
-    requestUpdate(state, payload) {
-      return { ...state, ...payload };
-    },
-    toggleTheme(state) {
-      return {
-        ...state,
-        theme: state.theme === "light" ? "dark" : "light",
-        isDirty: true,
-      };
-    },
-  },
-  listeners: new Set(), // Store listeners for state changes
-  dispatch(action, payload) {
-    if (this.actions[action]) {
-      this.state = this.actions[action](this.state, payload); // Update state
-      this.notifyListeners(); // Notify all listeners
-    } else {
-      console.warn(`Action "${action}" not found.`);
-    }
-  },
-  subscribe(listener) {
-    this.listeners.add(listener); // Add a listener
-    return () => this.listeners.delete(listener); // Return an unsubscribe function
-  },
-  notifyListeners() {
-    for (const listener of this.listeners) {
-      listener(); // Call each listener
-    }
-  },
+const listeners = new Set();
+
+const state = {
+  isLoading: false,
+  isDirty: false,
+  isAgreedToTerms: true,
+  numberOfUUIDS: 5,
+  UUIDS: [],
+  theme: localStorage.getItem("theme") ?? "light",
 };
 
-export default store;
+function notify() {
+  for (const listener of listeners) {
+    listener();
+  }
+}
+
+function setState(partial) {
+  Object.assign(state, partial);
+  if (Object.prototype.hasOwnProperty.call(partial, "theme")) {
+    localStorage.setItem("theme", state.theme);
+  }
+  
+  notify();
+}
+
+function subscribe(listener) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+export default {
+  state,
+  setState,
+  subscribe,
+};
