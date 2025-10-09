@@ -21,6 +21,7 @@ function setState(partial) {
   if (Object.prototype.hasOwnProperty.call(partial, "theme")) {
     localStorage.setItem("theme", state.theme);
   }
+  
   notify();
 }
 
