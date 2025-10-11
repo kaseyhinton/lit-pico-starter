@@ -3,7 +3,6 @@ const listeners = new Set();
 
 const state = {
   isLoading: false,
-  isDirty: false,
   isAgreedToTerms: true,
   numberOfUUIDS: 5,
   UUIDS: [],

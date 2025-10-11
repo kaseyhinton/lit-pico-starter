@@ -5,10 +5,11 @@ import store from "../services/store.js";
 export default () => html`
   <main class="container">
     <h3>Generate Secure UID</h3>
-    <p>Free and fast UID generation</p>
+    <p>
+      Free and fast UID generation
+    </p>
 
     <hr />
-
     <article>
       <header>Options</header>
       <form>

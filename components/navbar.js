@@ -16,7 +16,6 @@ export default () => html`
             @click=${() =>
               store.setState({
                 theme: store.state.theme === "light" ? "dark" : "light",
-                isDirty: true,
               })}
             class="secondary"
           >
