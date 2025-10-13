@@ -1,8 +1,9 @@
 import { html } from "../dependencies/lit-html.js";
+import { accountView } from "./account.js";
 
 import store from "../services/store.js";
 
-export default () => html`
+const homeView = () => html`
   <main class="container">
     <h3>Generate Secure UID</h3>
     <p>
@@ -88,3 +89,9 @@ export default () => html`
     </article>
   </main>
 `;
+
+export default () => {
+  const route = store.state.route?.name;
+ if (route === "account") return accountView();
+  return homeView();
+};

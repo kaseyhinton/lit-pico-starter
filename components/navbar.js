@@ -8,7 +8,9 @@ export default () => html`
   <div class="container">
     <nav>
       <ul>
-        <li><strong>GEN</strong> <kbd>UID</kbd></li>
+        <li @click=${() => (location.href = "/#/")}>
+          <strong>GEN</strong> <kbd>UID</kbd>
+        </li>
       </ul>
       <ul>
         <li>
@@ -27,7 +29,7 @@ export default () => html`
             <summary>Account</summary>
             <ul>
               <li>
-                <a href="#"> Settings</a>
+                <a href="/#/account"> Settings</a>
               </li>
               <li>
                 <a href="#"> Logout</a>
