@@ -1,13 +1,18 @@
 // store.js
 const listeners = new Set();
 
-const state = {
-  isLoading: false,
-  isAgreedToTerms: true,
-  numberOfUUIDS: 5,
-  UUIDS: [],
-  theme: localStorage.getItem("theme") ?? "light",
-};
+const storedState = localStorage.getItem("state");
+const state = storedState
+  ? JSON.parse(storedState)
+  : {
+      isLoading: false,
+      isAgreedToTerms: true,
+      numberOfUUIDS: 5,
+      UUIDS: [],
+      userAccessLevel: "User",
+      userEmail: "",
+      theme: localStorage.getItem("theme") ?? "light",
+    };
 
 function notify() {
   for (const listener of listeners) {
@@ -17,10 +22,8 @@ function notify() {
 
 function setState(partial) {
   Object.assign(state, partial);
-  if (Object.prototype.hasOwnProperty.call(partial, "theme")) {
-    localStorage.setItem("theme", state.theme);
-  }
-  
+  localStorage.setItem("state", JSON.stringify(state));
+
   notify();
 }
 

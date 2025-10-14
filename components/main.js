@@ -5,14 +5,16 @@ import store from "../services/store.js";
 
 const homeView = () => html`
   <main class="container">
-    <h3>Generate Secure UID</h3>
-    <p>
-      Free and fast UID generation
-    </p>
+    <header>
+      <hgroup>
+        <h1>Generate Secure UID</h1>
+        <p>Free and fast UID generation</p>
+      </hgroup>
+    </header>
 
     <hr />
     <article>
-      <header>Options</header>
+      <h2>Options</h2>
       <form>
         <fieldset>
           <label>
@@ -46,6 +48,7 @@ const homeView = () => html`
           </label>
         </fieldset>
         <button
+          right
           ?disabled=${!store?.state?.isAgreedToTerms}
           aria-busy="${store?.state?.isLoading ? "true" : "false"}"
           type="button"
@@ -68,8 +71,8 @@ const homeView = () => html`
       </form>
     </article>
     <article ?hidden=${!store?.state?.UUIDS?.length}>
-      <header>Results</header>
-      <table>
+      <h2>Results</h2>
+      <table class="striped">
         <thead>
           <tr>
             <th>Number</th>
@@ -92,6 +95,6 @@ const homeView = () => html`
 
 export default () => {
   const route = store.state.route?.name;
- if (route === "account") return accountView();
+  if (route === "account") return accountView();
   return homeView();
 };

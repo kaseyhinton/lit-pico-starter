@@ -1,14 +1,24 @@
-[hidden] {
-    display: none;
+body {
+  background-color: var(--pico-background-color);
+  color: var(--pico-color);
+  min-height: 100vh;
 }
 
-body {
-    background-color: var(--pico-background-color);
-    color: var(--pico-color);
-    min-height: 100vh;
+[hidden] {
+  display: none;
 }
 
 progress {
-    position: absolute;
-    border-radius: 0;
+  position: absolute;
+  border-radius: 0;
+}
+
+button:has(svg) {
+  padding: 0.5rem;
+  line-height: 1;
+}
+
+[right] {
+  justify-self: end;
+  display: block;
 }

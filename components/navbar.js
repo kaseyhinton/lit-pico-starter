@@ -5,39 +5,28 @@ import store from "../services/store.js";
 
 export default () => html`
   <progress ?hidden=${!store.state.isLoading}></progress>
-  <div class="container">
+  <header class="container">
     <nav>
       <ul>
-        <li @click=${() => (location.href = "/#/")}>
-          <strong>GEN</strong> <kbd>UID</kbd>
+        <li>
+          <a href="/#/"> <kbd>Generator</kbd> </a>
         </li>
       </ul>
       <ul>
+        <li>
+          <a href="/#/account" aria-current="page"> Account </a>
+        </li>
         <li>
           <button
             @click=${() =>
               store.setState({
                 theme: store.state.theme === "light" ? "dark" : "light",
               })}
-            class="secondary"
           >
             ${store.state.theme === "dark" ? moonIcon : sunIcon}
           </button>
         </li>
-        <li>
-          <details class="dropdown">
-            <summary>Account</summary>
-            <ul>
-              <li>
-                <a href="/#/account"> Settings</a>
-              </li>
-              <li>
-                <a href="#"> Logout</a>
-              </li>
-            </ul>
-          </details>
-        </li>
       </ul>
     </nav>
-  </div>
+  </header>
 `;
