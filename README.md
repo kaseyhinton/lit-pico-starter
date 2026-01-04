@@ -3,7 +3,17 @@
 This project aims to be portable, dependency‑light, and self‑contained so it can run for decades with minimal maintenance.
 
 ## Running
-- start a local server: `python -m http.server 3020` and visit `http://localhost:3020`.
+- start a local server
+
+```bash
+# Python
+python -m http.server 3000
+```
+
+```bash
+# Bun
+bunx serve
+```
 
 ## Design principles
 - No external runtime dependencies; all assets vendored in `dependencies/`.
