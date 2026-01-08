@@ -4,33 +4,31 @@ import navbar from "./components/navbar.js";
 import store from "./services/store.js";
 import main from "./components/main.js";
 
-(() => {
-  const getRoute = () => {
-    const [root, param] = window.location.hash
-      .replace(/^#/, "")
-      .split("/")
-      .filter(Boolean);
+const getRoute = () => {
+  const [root, param] = window.location.hash
+    .replace(/^#/, "")
+    .split("/")
+    .filter(Boolean);
 
-    const routes = {
-      account: () => ({ name: "account", params: {} }),
-    };
-
-    return routes[root]?.(param);
+  const routes = {
+    account: () => ({ name: "account", params: {} }),
   };
 
-  const handleRouteChange = () => {
-    store.setState({ route: getRoute() });
-    window.scrollTo(0, 0);
-  };
+  return routes[root]?.(param);
+};
 
-  handleRouteChange();
-  window.addEventListener("hashchange", handleRouteChange);
+const handleRouteChange = () => {
+  store.setState({ route: getRoute() });
+  window.scrollTo(0, 0);
+};
 
-  const rerender = () => {
-    document.body.setAttribute("data-theme", store.state.theme);
-    render(html` ${navbar()} ${main()} `, document.body);
-  };
+handleRouteChange();
+window.addEventListener("hashchange", handleRouteChange);
 
-  rerender();
-  store.subscribe(rerender);
-})();
+const rerender = () => {
+  document.body.setAttribute("data-theme", store.state.theme);
+  render(html` ${navbar()} ${main()} `, document.body);
+};
+
+rerender();
+store.subscribe(rerender);
