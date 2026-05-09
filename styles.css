@@ -4,10 +4,6 @@ body {
   min-height: 100vh;
 }
 
-[hidden] {
-  display: none;
-}
-
 progress {
   position: absolute;
   border-radius: 0;

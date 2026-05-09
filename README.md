@@ -16,8 +16,5 @@ bunx serve
 ```
 
 ## Design principles
-- No external runtime dependencies; all assets vendored in `dependencies/`.
+- No external runtime dependencies;`.
 
-## Vendored assets
-- `dependencies/pico.min.css` (Pico CSS)
-- `dependencies/lit-html.js` (Lit runtime) 

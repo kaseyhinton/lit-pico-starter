@@ -1,12 +1,287 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="/dependencies/pico.min.css" />
+    <link rel="stylesheet" href="pico.min.css" />
     <link rel="stylesheet" href="styles.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lit & Pico Starter</title>
-    <script type="module" src="./index.js"></script>
   </head>
   <body></body>
+  <script>
+    /* Assets */
+    const sunIcon = `
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    class="icon icon-tabler icons-tabler-filled icon-tabler-sun"
+  >
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M12 19a1 1 0 0 1 .993 .883l.007 .117v1a1 1 0 0 1 -1.993 .117l-.007 -.117v-1a1 1 0 0 1 1 -1z" />
+    <path d="M18.313 16.91l.094 .083l.7 .7a1 1 0 0 1 -1.32 1.497l-.094 -.083l-.7 -.7a1 1 0 0 1 1.218 -1.567l.102 .07z" />
+    <path d="M7.007 16.993a1 1 0 0 1 .083 1.32l-.083 .094l-.7 .7a1 1 0 0 1 -1.497 -1.32l.083 -.094l.7 -.7a1 1 0 0 1 1.414 0z" />
+    <path d="M4 11a1 1 0 0 1 .117 1.993l-.117 .007h-1a1 1 0 0 1 -.117 -1.993l.117 -.007h1z" />
+    <path d="M21 11a1 1 0 0 1 .117 1.993l-.117 .007h-1a1 1 0 0 1 -.117 -1.993l.117 -.007h1z" />
+    <path d="M6.213 4.81l.094 .083l.7 .7a1 1 0 0 1 -1.32 1.497l-.094 -.083l-.7 -.7a1 1 0 0 1 1.217 -1.567l.102 .07z" />
+    <path d="M19.107 4.893a1 1 0 0 1 .083 1.32l-.083 .094l-.7 .7a1 1 0 0 1 -1.497 -1.32l.083 -.094l.7 -.7a1 1 0 0 1 1.414 0z" />
+    <path d="M12 2a1 1 0 0 1 .993 .883l.007 .117v1a1 1 0 0 1 -1.993 .117l-.007 -.117v-1a1 1 0 0 1 1 -1z" />
+    <path d="M12 7a5 5 0 1 1 -4.995 5.217l-.005 -.217l.005 -.217a5 5 0 0 1 4.995 -4.783z" />
+  </svg>
+`;
+
+    const moonIcon = `
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    class="icon icon-tabler icons-tabler-filled icon-tabler-moon"
+  >
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M12 1.992a10 10 0 1 0 9.236 13.838c.341 -.82 -.476 -1.644 -1.298 -1.31a6.5 6.5 0 0 1 -6.864 -10.787l.077 -.08c.551 -.63 .113 -1.653 -.758 -1.653h-.266l-.068 -.006l-.06 -.002z" />
+  </svg>
+`;
+
+    /* State Management */
+    const listeners = new Set();
+
+    const storedState = localStorage.getItem("state");
+    const state = storedState
+      ? JSON.parse(storedState)
+      : {
+          isLoading: false,
+          isAgreedToTerms: false,
+          numberOfUUIDS: 5,
+          UUIDS: [],
+          userAccessLevel: null,
+          userEmail: null,
+          theme: localStorage.getItem("theme") ?? "light",
+        };
+    state.isLoading = false;
+
+    function notify() {
+      for (const listener of listeners) {
+        listener();
+      }
+    }
+
+    function setState(partial) {
+      Object.assign(state, partial);
+      localStorage.setItem("state", JSON.stringify(state));
+      notify();
+    }
+
+    function subscribe(listener) {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    }
+
+    window.state = state;
+    window.setState = setState;
+    window.subscribe = subscribe;
+
+    /* Routing */
+    const getRoute = () => {
+      const [root] = window.location.hash
+        .replace(/^#/, "")
+        .split("/")
+        .filter(Boolean);
+
+      const routes = {
+        account: () => ({ name: "account", params: {} }),
+      };
+
+      return routes[root]?.();
+    };
+
+    const handleRouteChange = () => {
+      setState({ route: getRoute() });
+      window.scrollTo(0, 0);
+    };
+
+    handleRouteChange();
+    window.addEventListener("hashchange", handleRouteChange);
+
+    /* Navbar */
+    window.navbarToggleTheme = () => {
+      setState({ theme: state.theme === "light" ? "dark" : "light" });
+    };
+
+    const navbar = () => `
+  <progress ${state?.isLoading ? "" : "hidden"}></progress>
+  <header class="container">
+    <nav>
+      <ul>
+        <li><a href="/#/"><kbd>Generator</kbd></a></li>
+      </ul>
+      <ul>
+        <li><a href="/#/account" aria-current="page">Account</a></li>
+        <li>
+          <button onclick="navbarToggleTheme()">
+            ${state.theme === "dark" ? moonIcon : sunIcon}
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </header>
+`;
+
+    /* Account View */
+    window.onEmailChanged = (e) => {
+      setState({ userEmail: e.target.value });
+    };
+
+    window.onAccessLevelChanged = (e) => {
+      setState({ userAccessLevel: e.target.value });
+    };
+
+    const accountView = () => `
+  <main class="container">
+    <header>
+      <hgroup>
+        <h1>Account</h1>
+        <p>Manage your account</p>
+      </hgroup>
+    </header>
+
+    <form>
+      <fieldset>
+        <label>
+          Email
+          <input
+            value="${state.userEmail || ""}"
+            onchange="onEmailChanged(event)"
+            type="email"
+            id="email"
+            placeholder="Email"
+            autocomplete="email"
+          />
+        </label>
+
+        <label>
+          Access Level
+          <select
+            name="accessLevel"
+            aria-label="Select your access level..."
+            required
+            onchange="onAccessLevelChanged(event)"
+          >
+            <option disabled ${state.userAccessLevel !== "User" && state.userAccessLevel !== "Admin" ? "selected" : ""} value="">Select your access level...</option>
+            <option value="User" ${state.userAccessLevel === "User" ? "selected" : ""}>User</option>
+            <option value="Admin" ${state.userAccessLevel === "Admin" ? "selected" : ""}>Admin</option>
+          </select>
+        </label>
+      </fieldset>
+    </form>
+  </main>
+`;
+
+    /* Home View */
+    window.updateUIIDS = (e) => {
+      const value = e?.target?.value;
+      setState({ numberOfUUIDS: value ? Number(value) : 0 });
+    };
+
+    window.generateUUIDs = () => {
+      setState({ isLoading: true });
+
+      const uuids = [];
+      for (let i = 0; i < state?.numberOfUUIDS; i++) {
+        uuids.push(crypto.randomUUID());
+      }
+
+      setTimeout(() => {
+        setState({ isLoading: false, UUIDS: uuids });
+      }, 1200);
+    };
+
+    window.agreeToTerms = () => {
+      setState({ isAgreedToTerms: !state.isAgreedToTerms });
+    };
+
+    const homeView = () => `
+  <main class="container">
+    <header>
+      <hgroup>
+        <h1>Generate Secure UID</h1>
+        <p>Free and fast UID generation</p>
+      </hgroup>
+    </header>
+
+    <hr />
+    <article>
+      <h2>Options</h2>
+      <form>
+        <fieldset>
+          <label>
+            How many to generate (${state?.numberOfUUIDS})
+            <input
+              type="range"
+              value=${state?.numberOfUUIDS?.toString()}
+              onchange="updateUIIDS(event)"
+            />
+          </label>
+
+          <label>
+            <input
+              name="terms"
+              type="checkbox"
+              role="switch"
+              onclick="agreeToTerms()"
+              ${state?.isAgreedToTerms ? "checked" : ""}
+            />
+            I agree to the Terms
+          </label>
+        </fieldset>
+        <button
+          right
+          ${state?.isAgreedToTerms ? "" : "disabled"}
+          aria-busy="${state?.isLoading ? "true" : "false"}"
+          type="button"
+          onclick="generateUUIDs()"
+        >
+          Generate
+        </button>
+      </form>
+    </article>
+    <article ?hidden=${!state?.UUIDS?.length}>
+      <h2>Results</h2>
+      <table class="striped">
+        <thead>
+          <tr>
+            <th>Number</th>
+            <th>UUID</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${state?.UUIDS?.map(
+            (uuid, idx) => `
+            <tr>
+              <td>#${idx + 1}</td>
+              <td>${uuid}</td>
+            </tr>`,
+          ).join("")}
+        </tbody>
+      </table>
+    </article>
+  </main>
+`;
+
+    /* Rendering */
+    const rerender = () => {
+      const route = state.route?.name;
+      document.body.setAttribute("data-theme", state.theme);
+      document.body.innerHTML = `
+    ${navbar()}
+    ${route === "account" ? accountView() : homeView()}
+  `;
+    };
+
+    rerender();
+    subscribe(rerender);
+  </script>
 </html>
