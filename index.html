@@ -1,7 +1,10 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="pico.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Native HTML Pico Starter</title>
@@ -90,7 +93,8 @@
     }
 
     /* Routing */
-    const getRoute = () => location.hash.replace(/^#\//, "").split("/").filter(Boolean)[0] || null;
+    const getRoute = () =>
+      location.hash.replace(/^#\//, "").split("/").filter(Boolean)[0] || null;
 
     const handleRouteChange = () => {
       setState({ route: getRoute() });
@@ -99,7 +103,9 @@
 
     function generate() {
       setState({ isLoading: true });
-      const uuids = Array.from({ length: state.numberOfUUIDS }, () => crypto.randomUUID());
+      const uuids = Array.from({ length: state.numberOfUUIDS }, () =>
+        crypto.randomUUID(),
+      );
       setTimeout(() => setState({ isLoading: false, UUIDS: uuids }), 1200);
     }
 
@@ -108,10 +114,10 @@
   <header class="container">
     <nav>
       <ul>
-        <li><a href="/#/"><kbd>Generator</kbd></a></li>
+        <li><a href="#/"><kbd>Generator</kbd></a></li>
       </ul>
       <ul>
-        <li><a href="/#/account" aria-current="page">Account</a></li>
+        <li><a href="#/account" aria-current="page">Account</a></li>
         <li>
           <button onclick="setState({ theme: state.theme === 'light' ? 'dark' : 'light' })">
             ${state.theme === "dark" ? moonIcon : sunIcon}
