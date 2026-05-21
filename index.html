@@ -2,10 +2,32 @@
 <html lang="en">
   <head>
     <link rel="stylesheet" href="pico.min.css" />
-    <link rel="stylesheet" href="styles.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lit & Pico Starter</title>
+    <title>Native HTML Pico Starter</title>
+
+    <style>
+      body {
+        background-color: var(--pico-background-color);
+        color: var(--pico-color);
+        min-height: 100vh;
+      }
+
+      progress {
+        position: absolute;
+        border-radius: 0;
+      }
+
+      button:has(svg) {
+        padding: 0.5rem;
+        line-height: 1;
+      }
+
+      [right] {
+        justify-self: end;
+        display: block;
+      }
+    </style>
   </head>
   <body></body>
   <script>
@@ -46,11 +68,9 @@
   </svg>
 `;
 
-    /* State Management */
-    const listeners = new Set();
-
+    /* State */
     const storedState = localStorage.getItem("state");
-    const state = storedState
+    var state = storedState
       ? JSON.parse(storedState)
       : {
           isLoading: false,
@@ -63,56 +83,28 @@
         };
     state.isLoading = false;
 
-    function notify() {
-      for (const listener of listeners) {
-        listener();
-      }
-    }
-
     function setState(partial) {
       Object.assign(state, partial);
       localStorage.setItem("state", JSON.stringify(state));
-      notify();
+      rerender();
     }
-
-    function subscribe(listener) {
-      listeners.add(listener);
-      return () => listeners.delete(listener);
-    }
-
-    window.state = state;
-    window.setState = setState;
-    window.subscribe = subscribe;
 
     /* Routing */
-    const getRoute = () => {
-      const [root] = window.location.hash
-        .replace(/^#/, "")
-        .split("/")
-        .filter(Boolean);
-
-      const routes = {
-        account: () => ({ name: "account", params: {} }),
-      };
-
-      return routes[root]?.();
-    };
+    const getRoute = () => location.hash.replace(/^#\//, "").split("/").filter(Boolean)[0] || null;
 
     const handleRouteChange = () => {
       setState({ route: getRoute() });
-      window.scrollTo(0, 0);
+      scrollTo(0, 0);
     };
 
-    handleRouteChange();
-    window.addEventListener("hashchange", handleRouteChange);
-
-    /* Navbar */
-    window.navbarToggleTheme = () => {
-      setState({ theme: state.theme === "light" ? "dark" : "light" });
-    };
+    function generate() {
+      setState({ isLoading: true });
+      const uuids = Array.from({ length: state.numberOfUUIDS }, () => crypto.randomUUID());
+      setTimeout(() => setState({ isLoading: false, UUIDS: uuids }), 1200);
+    }
 
     const navbar = () => `
-  <progress ${state?.isLoading ? "" : "hidden"}></progress>
+  <progress ${state.isLoading ? "" : "hidden"}></progress>
   <header class="container">
     <nav>
       <ul>
@@ -121,7 +113,7 @@
       <ul>
         <li><a href="/#/account" aria-current="page">Account</a></li>
         <li>
-          <button onclick="navbarToggleTheme()">
+          <button onclick="setState({ theme: state.theme === 'light' ? 'dark' : 'light' })">
             ${state.theme === "dark" ? moonIcon : sunIcon}
           </button>
         </li>
@@ -187,10 +179,10 @@
       <form>
         <fieldset>
           <label>
-            How many to generate (${state?.numberOfUUIDS})
+            How many to generate (${state.numberOfUUIDS})
             <input
               type="range"
-              value=${state?.numberOfUUIDS?.toString()}
+              value=${state.numberOfUUIDS}
               onchange="setState({ numberOfUUIDS: event.target.value ? Number(event.target.value) : 0 })"
               />
           </label>
@@ -201,32 +193,22 @@
               type="checkbox"
               role="switch"
               onclick="setState({ isAgreedToTerms: !state.isAgreedToTerms })"
-              ${state?.isAgreedToTerms ? "checked" : ""}
+              ${state.isAgreedToTerms ? "checked" : ""}
             />
             I agree to the Terms
           </label>
         </fieldset>
         <button
           right
-          ${state?.isAgreedToTerms ? "" : "disabled"}
-          aria-busy="${state?.isLoading ? "true" : "false"}"
+          ${state.isAgreedToTerms ? "" : "disabled"}
+          aria-busy="${state.isLoading}"
           type="button"
-          onclick="(() => {
-            setState({ isLoading: true }); 
-            const uuids = []; 
-            for (let i = 0; i < (state?.numberOfUUIDS || 0); i++) { 
-              uuids.push(crypto.randomUUID()); 
-            } 
-            setTimeout(() => { 
-              setState({ isLoading: false, UUIDS: uuids }); 
-            }, 1200);
-          })()"       
-          >
+          onclick="generate()">
           Generate
         </button>
       </form>
     </article>
-    <article ?hidden=${!state?.UUIDS?.length}>
+    <article ${state.UUIDS.length ? "" : "hidden"}>  
       <h2>Results</h2>
       <table class="striped">
         <thead>
@@ -236,7 +218,7 @@
           </tr>
         </thead>
         <tbody>
-          ${state?.UUIDS?.map(
+          ${state.UUIDS.map(
             (uuid, idx) => `
             <tr>
               <td>#${idx + 1}</td>
@@ -250,16 +232,15 @@
 `;
 
     /* Rendering */
-    const rerender = () => {
-      const route = state.route?.name;
+    handleRouteChange();
+    window.addEventListener("hashchange", handleRouteChange);
+
+    function rerender() {
       document.body.setAttribute("data-theme", state.theme);
       document.body.innerHTML = `
     ${navbar()}
-    ${route === "account" ? accountView() : homeView()}
+    ${state.route === "account" ? accountView() : homeView()}
   `;
-    };
-
-    rerender();
-    subscribe(rerender);
+    }
   </script>
 </html>

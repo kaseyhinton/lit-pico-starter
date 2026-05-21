@@ -1,6 +1,6 @@
-# Lit + Pico Starter
+# Native HTML + Pico Starter
 
-This project aims to be portable, dependency‑light, and self‑contained so it can run for decades with minimal maintenance.
+This project aims to be portable, dependency‑free, and self‑contained so it can run for decades with minimal maintenance.
 
 ## Running
 - start a local server
@@ -14,7 +14,4 @@ python -m http.server 3000
 # Bun
 bunx serve
 ```
-
-## Design principles
-- No external runtime dependencies;`.
 
