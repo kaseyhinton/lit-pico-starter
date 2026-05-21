@@ -130,15 +130,6 @@
   </header>
 `;
 
-    /* Account View */
-    window.onEmailChanged = (e) => {
-      setState({ userEmail: e.target.value });
-    };
-
-    window.onAccessLevelChanged = (e) => {
-      setState({ userAccessLevel: e.target.value });
-    };
-
     const accountView = () => `
   <main class="container">
     <header>
@@ -154,7 +145,7 @@
           Email
           <input
             value="${state.userEmail || ""}"
-            onchange="onEmailChanged(event)"
+            onchange="setState({ userEmail: this.value })"
             type="email"
             id="email"
             placeholder="Email"
@@ -168,7 +159,7 @@
             name="accessLevel"
             aria-label="Select your access level..."
             required
-            onchange="onAccessLevelChanged(event)"
+            onchange="setState({ userAccessLevel: this.value })"
           >
             <option disabled ${state.userAccessLevel !== "User" && state.userAccessLevel !== "Admin" ? "selected" : ""} value="">Select your access level...</option>
             <option value="User" ${state.userAccessLevel === "User" ? "selected" : ""}>User</option>
@@ -181,28 +172,6 @@
 `;
 
     /* Home View */
-    window.updateUIIDS = (e) => {
-      const value = e?.target?.value;
-      setState({ numberOfUUIDS: value ? Number(value) : 0 });
-    };
-
-    window.generateUUIDs = () => {
-      setState({ isLoading: true });
-
-      const uuids = [];
-      for (let i = 0; i < state?.numberOfUUIDS; i++) {
-        uuids.push(crypto.randomUUID());
-      }
-
-      setTimeout(() => {
-        setState({ isLoading: false, UUIDS: uuids });
-      }, 1200);
-    };
-
-    window.agreeToTerms = () => {
-      setState({ isAgreedToTerms: !state.isAgreedToTerms });
-    };
-
     const homeView = () => `
   <main class="container">
     <header>
@@ -222,8 +191,8 @@
             <input
               type="range"
               value=${state?.numberOfUUIDS?.toString()}
-              onchange="updateUIIDS(event)"
-            />
+              onchange="setState({ numberOfUUIDS: event.target.value ? Number(event.target.value) : 0 })"
+              />
           </label>
 
           <label>
@@ -231,7 +200,7 @@
               name="terms"
               type="checkbox"
               role="switch"
-              onclick="agreeToTerms()"
+              onclick="setState({ isAgreedToTerms: !state.isAgreedToTerms })"
               ${state?.isAgreedToTerms ? "checked" : ""}
             />
             I agree to the Terms
@@ -242,8 +211,17 @@
           ${state?.isAgreedToTerms ? "" : "disabled"}
           aria-busy="${state?.isLoading ? "true" : "false"}"
           type="button"
-          onclick="generateUUIDs()"
-        >
+          onclick="(() => {
+            setState({ isLoading: true }); 
+            const uuids = []; 
+            for (let i = 0; i < (state?.numberOfUUIDS || 0); i++) { 
+              uuids.push(crypto.randomUUID()); 
+            } 
+            setTimeout(() => { 
+              setState({ isLoading: false, UUIDS: uuids }); 
+            }, 1200);
+          })()"       
+          >
           Generate
         </button>
       </form>
